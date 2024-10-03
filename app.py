@@ -412,4 +412,4 @@ def update_charts(iso3, admin_level, date, dataset, lt, stat, geojson, df_store)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)
