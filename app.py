@@ -181,12 +181,10 @@ app.layout = html.Div(
                                 dmc.TabsPanel([chart_panel()], value="charts"),
                                 dmc.TabsPanel(
                                     [
+                                        dmc.Button(style={"marginTop": "15px"}, children="Download as CSV", variant="outline", fullWidth=True, id='csv-download'),
                                         dmc.LoadingOverlay(
                                             html.Div(
                                                 id="grid",
-                                                style={
-                                                    "marginTop": "15px",
-                                                },
                                             )
                                         ),
                                     ],
@@ -255,6 +253,17 @@ def fetch_data_from_db(iso3, adm_level, dataset, lt=None):
     engine.dispose()
 
     return df
+
+
+@app.callback(
+    Output("ag-grid-table", "exportDataAsCsv"),
+    Input("csv-download", "n_clicks"),
+    prevent_initial_call=True
+)
+def export_data_as_csv(n_clicks):
+    if n_clicks:
+        return True
+    return False
 
 
 @app.callback(
