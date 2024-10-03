@@ -225,7 +225,7 @@ def to_first_of_month(date_string):
 
 
 def load_geojson(iso3, adm_level):
-    file_path = f"data/{iso3}_adm{adm_level.lower()}.geojson"
+    file_path = f"data/{iso3.lower()}_adm{adm_level}.geojson"
     with open(file_path, "r") as f:
         return json.load(f)
 
