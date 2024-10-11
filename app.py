@@ -33,11 +33,20 @@ navbar = dbc.NavbarSimple(
 
 load_dotenv()
 
-AZURE_DB_PW = os.getenv("AZURE_DB_PW")
-MODE = os.getenv("MODE")
-ENGINE_URL = f"postgresql+psycopg2://chdadmin:{AZURE_DB_PW}@chd-rasterstats-dev.postgres.database.azure.com/postgres"
-# TODO: Optimize this further
-engine = create_engine(ENGINE_URL)
+AZURE_DB_PW_DEV = os.getenv("AZURE_DB_PW_DEV")
+AZURE_DB_PW_PROD = os.getenv("AZURE_DB_PW_PROD")
+MODE = os.getenv("MODE", "dev")
+
+
+def get_engine(mode):
+    if mode == "prod":
+        url = f"postgresql+psycopg2://chdadmin:{AZURE_DB_PW_PROD}@chd-rasterstats-prod.postgres.database.azure.com/postgres"
+    else:
+        url = f"postgresql+psycopg2://chdadmin:{AZURE_DB_PW_DEV}@chd-rasterstats-dev.postgres.database.azure.com/postgres"
+    return create_engine(url)
+
+
+engine = get_engine(MODE)
 
 # Initialize the Dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -181,7 +190,13 @@ app.layout = html.Div(
                                 dmc.TabsPanel([chart_panel()], value="charts"),
                                 dmc.TabsPanel(
                                     [
-                                        dmc.Button(style={"marginTop": "15px"}, children="Download as CSV", variant="outline", fullWidth=True, id='csv-download'),
+                                        dmc.Button(
+                                            style={"marginTop": "15px"},
+                                            children="Download as CSV",
+                                            variant="outline",
+                                            fullWidth=True,
+                                            id="csv-download",
+                                        ),
                                         dmc.LoadingOverlay(
                                             html.Div(
                                                 id="grid",
@@ -234,6 +249,16 @@ def calculate_centroid(geojson):
     return centroid.y, centroid.x
 
 
+def get_table_row_count(engine):
+    tables = ["era5", "seas5", "imerg"]
+    results = {}
+    with engine.connect() as connection:
+        for table in tables:
+            result = connection.execute(text(f"SELECT COUNT(*) FROM public.{table}"))
+            results.update({table: result.scalar()})
+        return results
+
+
 # Function to fetch data from the database
 def fetch_data_from_db(iso3, adm_level, dataset, lt=None):
 
@@ -258,7 +283,7 @@ def fetch_data_from_db(iso3, adm_level, dataset, lt=None):
 @app.callback(
     Output("ag-grid-table", "exportDataAsCsv"),
     Input("csv-download", "n_clicks"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def export_data_as_csv(n_clicks):
     if n_clicks:
