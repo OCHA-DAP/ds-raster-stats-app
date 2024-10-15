@@ -29,11 +29,11 @@ def fetch_data_from_db(iso3, adm_level, dataset, lt=None):
     con = engine.connect()
     if not lt:
         query = text(
-            f"SELECT * FROM public.{dataset} WHERE iso3='{iso3}' AND adm_level='{adm_level}'"
+            f"SELECT * FROM public.{dataset} WHERE iso3='{iso3}' AND adm_level='{adm_level}'"  # noqa
         )
     else:
         query = text(
-            f"SELECT * FROM public.{dataset} WHERE iso3='{iso3}' AND adm_level={adm_level} AND leadtime='{lt}'"
+            f"SELECT * FROM public.{dataset} WHERE iso3='{iso3}' AND adm_level={adm_level} AND leadtime='{lt}'"  # noqa
         )
     df = pd.read_sql_query(query, con)
     df.valid_date = pd.to_datetime(df.valid_date)

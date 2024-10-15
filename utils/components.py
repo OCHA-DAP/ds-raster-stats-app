@@ -91,7 +91,9 @@ def mantine_sidebar_panel():
                 style={"width": 200, "marginBottom": 10},
             ),
             dmc.Alert(
-                "Your selected dataset has monthly averaged values. All dates selected within the same month will return the same data.",
+                """Your selected dataset has monthly averaged values. 
+                All dates selected within the same month will return the same data.
+                """,
                 title="Monthly average",
                 style={"width": 200, "marginBottom": 10},
                 id="date-info",

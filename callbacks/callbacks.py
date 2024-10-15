@@ -2,7 +2,6 @@ import dash
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, ctx
-from dash.dependencies import Input, Output, State
 
 from constants import MODE
 from utils.components import data_grid
