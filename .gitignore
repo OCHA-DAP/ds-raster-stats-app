@@ -2,13 +2,7 @@
 venv/*
 *.ipynb
 .DS_Store
-# Ignore all .pyc files
-**/*.pyc
 
-# Ignore all __pycache__ directories
-**/__pycache__/*
-
-utils/__pycache__/components.cpython-312.pyc
-
-*/__pycache__
-__pycache__
+__pycache__/
+*.py[cod]
+*$py.class
