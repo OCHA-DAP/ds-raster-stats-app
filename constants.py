@@ -1,1 +1,3 @@
-MODE = "dev"
+import os
+
+MODE = os.getenv("MODE", "dev")

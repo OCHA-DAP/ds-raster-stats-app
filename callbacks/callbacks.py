@@ -2,11 +2,12 @@ import dash
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, ctx
+from sqlalchemy import text
+from utils.data_processing import get_engine
 
 from constants import MODE
 from utils.components import data_grid
-from utils.data_processing import (calculate_centroid, fetch_data_from_db,
-                                   load_geojson)
+from utils.data_processing import calculate_centroid, fetch_data_from_db, load_geojson
 from utils.date_utils import display_date_range, to_first_of_month
 
 
@@ -162,3 +163,38 @@ def register_callbacks(app):
         map_chart.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
 
         return map_chart, ag_grid, df_return
+
+    @app.callback(
+        Output("completeness-table", "rowData"), Input("ds-dropdown", "value")
+    )
+    def update_completeness_table(dataset):
+        engine = get_engine("prod")
+        query = text("SELECT * FROM public.iso3")
+        query_completeness = text(f"SELECT * FROM public.{dataset}_completeness")
+
+        with engine.connect() as con:
+            df_all_iso3s = pd.read_sql_query(query, con)
+            df_completeness = pd.read_sql_query(query_completeness, con)
+            df_merged = df_all_iso3s[
+                ["iso3", "stats_last_updated", "total-pcodes"]
+            ].merge(df_completeness, on="iso3", how="left")
+            df_grouped = (
+                df_merged.groupby("iso3")
+                .agg(
+                    {
+                        "stats_last_updated": "first",
+                        "total-pcodes": "first",
+                        "year": "count",
+                        "total_rows": "sum",
+                        "unique_pcodes": "first",
+                    }
+                )
+                .reset_index()
+            )
+
+        ds_factor = {"era5": 525, "seas5": 526 * 7, "imerg": None}
+
+        df_grouped["total_rows_correct"] = (
+            ds_factor[dataset] * df_grouped["total-pcodes"]
+        )
+        return df_grouped.to_dict("records")

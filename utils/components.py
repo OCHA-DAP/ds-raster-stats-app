@@ -79,7 +79,7 @@ def mantine_sidebar_panel():
             dmc.Select(
                 label="Select an admin level",
                 id="admin-level-dropdown",
-                value="1",
+                value="0",
                 data=["0", "1", "2"],
                 style={"width": 200, "marginBottom": 10},
             ),
@@ -127,4 +127,33 @@ def chart_panel():
             ),
         ],
         style={"float": "left", "boxSizing": "border-box", "width": "100%"},
+    )
+
+
+def database_completeness():
+
+    column_defs = [
+        {"field": "iso3"},
+        {"field": "total_rows", "type": "numericColumn"},
+        {"field": "total_rows_correct", "type": "numericColumn"},
+    ]
+
+    return dag.AgGrid(
+        id="completeness-table",
+        columnDefs=column_defs,
+        defaultColDef={
+            "filter": True,
+            "sortable": True,
+            "resizable": True,
+        },
+        style={"height": 600},
+        className="ag-theme-material compact",
+        getRowStyle={
+            "styleConditions": [
+                {
+                    "condition": "params.data.total_rows != params.data.total_rows_correct",  # noqa
+                    "style": {"backgroundColor": "#ffe6e6"},
+                },
+            ]
+        },
     )

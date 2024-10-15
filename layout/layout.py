@@ -1,7 +1,12 @@
 import dash_mantine_components as dmc
 from dash import dcc, html
 
-from utils.components import chart_panel, mantine_sidebar_panel, navbar
+from utils.components import (
+    chart_panel,
+    mantine_sidebar_panel,
+    navbar,
+    database_completeness,
+)
 
 
 def create_layout():
@@ -49,7 +54,21 @@ def create_layout():
                                         value="table",
                                     ),
                                     dmc.TabsPanel(
-                                        [dmc.Alert("TODO!", color="red")], value="db"
+                                        dmc.LoadingOverlay(
+                                            html.Div(
+                                                [
+                                                    html.Div(
+                                                        id="completeness-table-div",
+                                                        children=database_completeness(),
+                                                    ),
+                                                    html.Div(
+                                                        id="completeness-table-detail",
+                                                    ),
+                                                ],
+                                                # style={"display": "flex"}
+                                            )
+                                        ),
+                                        value="db",
                                     ),
                                 ],
                                 orientation="horizontal",
