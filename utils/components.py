@@ -139,25 +139,34 @@ def database_completeness():
             "headerName": "Max Admin",
             "type": "numericColumn",
             "width": 75,
+            "headerTooltip": "Lowest admin level with stats calculated",
         },
         {
             "field": "total-pcodes",
             "headerName": "Total Pcodes",
             "type": "numericColumn",
             "width": 100,
+            "headerTooltip": "Total number of pcodes across all admin levels",
         },
-        {"field": "stats_last_updated", "headerName": "Stats Updated", "width": 120},
+        {
+            "field": "stats_last_updated",
+            "headerName": "Stats Updated",
+            "width": 120,
+            "headerTooltip": "Date stats were last computed",
+        },
         {
             "field": "total_rows",
             "headerName": "Actual Rows",
             "type": "numericColumn",
             "width": 100,
+            "headerTooltip": "Number of rows in the database",
         },
         {
             "field": "total_rows_correct",
             "headerName": "Expected Rows",
             "type": "numericColumn",
             "width": 100,
+            "headerTooltip": "Number of rows we'd expect in the database",
         },
     ]
 
@@ -171,6 +180,7 @@ def database_completeness():
         },
         dashGridOptions={
             "rowSelection": "single",
+            "tooltipShowDelay": 500,
         },
         style={"height": 600},
         className="ag-theme-material compact",
@@ -194,7 +204,11 @@ def database_details():
     column_defs = [
         {"field": "iso3", "headerName": "ISO3", "width": 120},
         {"field": "year", "headerName": "Year", "width": 75},
-        {"field": "total_rows", "headerName": "Total Rows", "width": 120},
+        {
+            "field": "total_rows",
+            "headerName": "Total Rows",
+            "width": 120,
+        },
         {"field": "unique_dates", "headerName": "Unique Dates", "width": 120},
         {"field": "unique_pcodes", "headerName": "Unique Pcodes", "width": 120},
     ]

@@ -167,10 +167,10 @@ def register_callbacks(app):
     @app.callback(
         Output("completeness-table", "rowData"),
         Output("completeness-table", "selectedRows"),
-        Input("ds-dropdown", "value")
+        Input("ds-dropdown", "value"),
     )
     def update_completeness_table(dataset):
-        engine = get_engine("prod")
+        engine = get_engine(MODE)
         query = text("SELECT * FROM public.iso3")
         query_completeness = text(f"SELECT * FROM public.{dataset}_completeness")
 
@@ -211,17 +211,16 @@ def register_callbacks(app):
         df_dict = df_grouped.to_dict("records")
         return df_dict, [df_dict[0]]
 
-
     @app.callback(
         Output("completeness-table-detail", "rowData"),
         Input("completeness-table", "selectedRows"),
-        State("ds-dropdown", "value")
+        State("ds-dropdown", "value"),
     )
     def populate_detail_table(selected, dataset):
-        print(selected)
-        engine = get_engine("prod")
-        query = text(f"SELECT * FROM public.{dataset}_completeness WHERE iso3='{selected[0]['iso3']}'")  # noqa
+        engine = get_engine(MODE)
+        query = text(
+            f"SELECT * FROM public.{dataset}_completeness WHERE iso3='{selected[0]['iso3']}'"  # noqa
+        )  
         with engine.connect() as con:
             df = pd.read_sql_query(query, con)
-        
         return df.to_dict("records")
