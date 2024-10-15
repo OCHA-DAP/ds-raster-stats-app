@@ -11,4 +11,11 @@
 
 .ag-theme-material.compact {
     --ag-grid-size: 3px;
+    
 }
+
+.ag-theme-material.compact.light  .ag-cell{
+    color: #c7c7c7;
+    
+}
+

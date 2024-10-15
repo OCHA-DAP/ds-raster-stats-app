@@ -6,6 +6,7 @@ from utils.components import (
     mantine_sidebar_panel,
     navbar,
     database_completeness,
+    database_details,
 )
 
 
@@ -54,20 +55,32 @@ def create_layout():
                                         value="table",
                                     ),
                                     dmc.TabsPanel(
-                                        dmc.LoadingOverlay(
+                                        [
                                             html.Div(
                                                 [
                                                     html.Div(
-                                                        id="completeness-table-div",
                                                         children=database_completeness(),
+                                                        style={
+                                                            "backgroundColor": "red",
+                                                            "width": "50%",
+                                                        },
+                                                        id="completeness-table-div",
                                                     ),
                                                     html.Div(
-                                                        id="completeness-table-detail",
+                                                        children=database_details(),
+                                                        style={
+                                                            "backgroundColor": "green",
+                                                            "width": "50%",
+                                                        },
+                                                        id="green",
                                                     ),
                                                 ],
-                                                # style={"display": "flex"}
-                                            )
-                                        ),
+                                                style={
+                                                    "display": "flex",
+                                                    "height": "500px",
+                                                },
+                                            ),
+                                        ],
                                         value="db",
                                     ),
                                 ],

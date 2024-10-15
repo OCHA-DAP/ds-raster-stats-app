@@ -133,9 +133,32 @@ def chart_panel():
 def database_completeness():
 
     column_defs = [
-        {"field": "iso3"},
-        {"field": "total_rows", "type": "numericColumn"},
-        {"field": "total_rows_correct", "type": "numericColumn"},
+        {"field": "iso3", "headerName": "ISO3", "width": 75},
+        {
+            "field": "max_adm_level",
+            "headerName": "Max Admin",
+            "type": "numericColumn",
+            "width": 75,
+        },
+        {
+            "field": "total-pcodes",
+            "headerName": "Total Pcodes",
+            "type": "numericColumn",
+            "width": 100,
+        },
+        {"field": "stats_last_updated", "headerName": "Stats Updated", "width": 120},
+        {
+            "field": "total_rows",
+            "headerName": "Actual Rows",
+            "type": "numericColumn",
+            "width": 100,
+        },
+        {
+            "field": "total_rows_correct",
+            "headerName": "Expected Rows",
+            "type": "numericColumn",
+            "width": 100,
+        },
     ]
 
     return dag.AgGrid(
@@ -146,14 +169,43 @@ def database_completeness():
             "sortable": True,
             "resizable": True,
         },
+        dashGridOptions={
+            "rowSelection": "single",
+        },
         style={"height": 600},
         className="ag-theme-material compact",
         getRowStyle={
             "styleConditions": [
                 {
-                    "condition": "params.data.total_rows != params.data.total_rows_correct",  # noqa
+                    "condition": "params.data.total_rows < params.data.total_rows_correct",  # noqa
+                    "style": {"backgroundColor": "#ff576d"},
+                },
+                {
+                    "condition": "params.data.total_rows > params.data.total_rows_correct",  # noqa
                     "style": {"backgroundColor": "#ffe6e6"},
                 },
             ]
         },
+        selectedRows=[],
+    )
+
+
+def database_details():
+    column_defs = [
+        {"field": "iso3", "headerName": "ISO3", "width": 120},
+        {"field": "year", "headerName": "Year", "width": 75},
+        {"field": "total_rows", "headerName": "Total Rows", "width": 120},
+        {"field": "unique_dates", "headerName": "Unique Dates", "width": 120},
+        {"field": "unique_pcodes", "headerName": "Unique Pcodes", "width": 120},
+    ]
+    return dag.AgGrid(
+        id="completeness-table-detail",
+        columnDefs=column_defs,
+        defaultColDef={
+            "filter": True,
+            "sortable": True,
+            "resizable": True,
+        },
+        style={"height": 600},
+        className="ag-theme-material compact light",
     )

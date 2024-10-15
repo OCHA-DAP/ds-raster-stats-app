@@ -165,7 +165,9 @@ def register_callbacks(app):
         return map_chart, ag_grid, df_return
 
     @app.callback(
-        Output("completeness-table", "rowData"), Input("ds-dropdown", "value")
+        Output("completeness-table", "rowData"),
+        Output("completeness-table", "selectedRows"),
+        Input("ds-dropdown", "value")
     )
     def update_completeness_table(dataset):
         engine = get_engine("prod")
@@ -176,13 +178,14 @@ def register_callbacks(app):
             df_all_iso3s = pd.read_sql_query(query, con)
             df_completeness = pd.read_sql_query(query_completeness, con)
             df_merged = df_all_iso3s[
-                ["iso3", "stats_last_updated", "total-pcodes"]
+                ["iso3", "stats_last_updated", "total-pcodes", "max_adm_level"]
             ].merge(df_completeness, on="iso3", how="left")
             df_grouped = (
                 df_merged.groupby("iso3")
                 .agg(
                     {
                         "stats_last_updated": "first",
+                        "max_adm_level": "first",
                         "total-pcodes": "first",
                         "year": "count",
                         "total_rows": "sum",
@@ -192,9 +195,33 @@ def register_callbacks(app):
                 .reset_index()
             )
 
-        ds_factor = {"era5": 525, "seas5": 526 * 7, "imerg": None}
+        # TODO -- Calculate expected vals dynamically based on current date
+        ds_factor = {"era5": 525, "seas5": 526 * 7, "imerg": 8690}
+        ds_date_updated = {
+            "era5": "2024-10-10",
+            "seas5": "2024-10-09",
+            "imerg": "2024-10-11",
+        }
 
         df_grouped["total_rows_correct"] = (
             ds_factor[dataset] * df_grouped["total-pcodes"]
         )
-        return df_grouped.to_dict("records")
+        # TODO -- Pull from DB instead of hard-coding
+        df_grouped["stats_last_updated"] = ds_date_updated[dataset]
+        df_dict = df_grouped.to_dict("records")
+        return df_dict, [df_dict[0]]
+
+
+    @app.callback(
+        Output("completeness-table-detail", "rowData"),
+        Input("completeness-table", "selectedRows"),
+        State("ds-dropdown", "value")
+    )
+    def populate_detail_table(selected, dataset):
+        print(selected)
+        engine = get_engine("prod")
+        query = text(f"SELECT * FROM public.{dataset}_completeness WHERE iso3='{selected[0]['iso3']}'")  # noqa
+        with engine.connect() as con:
+            df = pd.read_sql_query(query, con)
+        
+        return df.to_dict("records")
