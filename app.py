@@ -7,6 +7,7 @@ from layout.layout import create_layout
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Raster Stats Viz"
+server = app.server
 
 app.layout = create_layout()
 

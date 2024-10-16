@@ -12,15 +12,15 @@ from utils.date_utils import display_date_range, to_first_of_month
 
 
 def register_callbacks(app):
-    @app.callback(
-        Output("ag-grid-table", "exportDataAsCsv"),
-        Input("csv-download", "n_clicks"),
-        prevent_initial_call=True,
-    )
-    def export_data_as_csv(n_clicks):
-        if n_clicks:
-            return True
-        return False
+    # @app.callback(
+    #     Output("ag-grid-table", "exportDataAsCsv"),
+    #     Input("csv-download", "n_clicks"),
+    #     prevent_initial_call=True,
+    # )
+    # def export_data_as_csv(n_clicks):
+    #     if n_clicks:
+    #         return True
+    #     return False
 
     @app.callback(
         Output("line", "figure"),

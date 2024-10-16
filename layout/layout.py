@@ -39,13 +39,13 @@ def create_layout():
                                     dmc.TabsPanel([chart_panel()], value="charts"),
                                     dmc.TabsPanel(
                                         [
-                                            dmc.Button(
-                                                style={"marginTop": "15px"},
-                                                children="Download as CSV",
-                                                variant="outline",
-                                                fullWidth=True,
-                                                id="csv-download",
-                                            ),
+                                            # dmc.Button(
+                                            #     style={"marginTop": "15px"},
+                                            #     children="Download as CSV",
+                                            #     variant="outline",
+                                            #     fullWidth=True,
+                                            #     id="csv-download",
+                                            # ),
                                             dmc.LoadingOverlay(
                                                 html.Div(
                                                     id="grid",
