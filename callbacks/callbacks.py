@@ -220,7 +220,7 @@ def register_callbacks(app):
         engine = get_engine(MODE)
         query = text(
             f"SELECT * FROM public.{dataset}_completeness WHERE iso3='{selected[0]['iso3']}'"  # noqa
-        )  
+        )
         with engine.connect() as con:
             df = pd.read_sql_query(query, con)
         return df.to_dict("records")
