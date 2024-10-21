@@ -1,17 +1,10 @@
 import json
-import os
 
 import geopandas as gpd
 import pandas as pd
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
-from constants import MODE
-
-load_dotenv()
-
-AZURE_DB_PW_DEV = os.getenv("AZURE_DB_PW_DEV")
-AZURE_DB_PW_PROD = os.getenv("AZURE_DB_PW_PROD")
+from constants import MODE, AZURE_DB_PW_DEV, AZURE_DB_PW_PROD
 
 
 def get_engine(mode):
